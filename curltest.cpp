@@ -35,7 +35,7 @@ void get_info(string ip_address){
     curl = curl_easy_init();
 
     if (curl){
-        string get_url = "http://" + ip_address + ":8093/data/road/info/test13";
+        string get_url = "http://" + ip_address + ":8093/data/road/info/test01";
         curl_easy_setopt(curl, CURLOPT_URL, get_url.c_str());
         
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_func);
@@ -46,6 +46,53 @@ void get_info(string ip_address){
         LOG_IF(ERROR, res!=CURLE_OK) << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
 
         LOG(INFO) << "s is: " << s << endl;
+
+        Document doc;
+        doc.Parse(s.c_str(), s.size());
+        LOG(INFO) << "config is: " << doc["data"]["config"].GetString() << endl;
+
+        LOG(INFO) << " config is string: " << doc["data"]["config"].IsString() << endl;
+
+
+        string t = doc["data"]["config"].GetString();
+        Document d;
+        d.Parse(t.c_str(), t.size());
+
+        LOG(INFO) << "d is object: " << d.IsObject() << endl;
+        LOG(INFO) << "d has BIKE_AREA: " << d.HasMember("BIKE_AREA") << endl;
+        LOG(INFO) << "bike_area is array: " << d["BIKE_AREA"].IsArray() << endl;
+
+        // if (d.HasMember("BIKE_AREA"))
+        // {
+        //     const Value &a = d["BIKE_AREA"];
+        //     for (SizeType i = 0; i < a.Size(); i++)
+        //         LOG(INFO) << a[i].GetString() << endl;
+        // }
+        vector<string> keys = {"BIKE_AREA","CAR_AREA", "WARNING_AREA_1", "WARNING_AREA_2"};
+
+        for (auto k:keys)
+        {
+            if (d.HasMember(k.c_str()))
+                    {
+                        LOG(INFO) << "====== Printing " << k << " ======" << endl;
+                        const Value &a = d[k.c_str()];
+                        for (SizeType i = 0; i < a.Size(); i++){
+                            // LOG(INFO) << a[i].GetString() << endl;
+                            string tt = a[i].GetString();
+                            tt = tt.substr(1, tt.size()-2);
+                            auto index = tt.find(",");
+                            int x = stoi(tt.substr(0, index));
+                            int y = stoi(tt.substr(index+2, tt.size()-1));
+                            LOG(INFO) << x << " " << y << endl;
+                            // LOG(INFO) << stoi(t.substr(0, index)) << " " << stoi(tt.substr(index+2, tt.size()-1)) << endl;
+                            // LOG(INFO) << tt.substr(1, tt.size()-2) << endl;
+                        }
+                            
+                    }
+        }
+        // StringBuffer buffer;
+        // Writer<StringBuffer> writer(buffer);
+        // doc.Accept(writer);
 
         curl_easy_cleanup(curl);
     }
@@ -253,7 +300,7 @@ int main(int argc, char* argv[]){
 
     get_info(ip_address);
 
-    test_heartbeat(ip_address);
+    // test_heartbeat(ip_address);
 
     Document doc;
     doc.SetObject();
@@ -269,7 +316,7 @@ int main(int argc, char* argv[]){
 
     string json_incomp = s.GetString();
 
-    post_violation(ip_address, json_incomp);
+    // post_violation(ip_address, json_incomp);
 
 }
 

@@ -4,9 +4,37 @@
 
 using namespace std;
 
-int main(){
+class Tester{
+private:
+    int *ptr;
+    string id;
 
-    int val = 100;
-    int &r = val;
-    cout << "r is: " << r << endl;
+public:
+    Tester(string s) {
+        id = s;
+    }
+    ~Tester() {}
+
+    void Get(){        
+        if (true){
+            int *p = new int;
+            cout << "p value is: " << p << endl;
+            ptr = p;
+        }
+    }
+
+    void Show(){
+        cout << "Tester id is: " << id << endl;
+        cout << "ptr value is: " << ptr << endl;
+    }
+};
+
+int main(){
+    Tester t = Tester("Helix");
+    t.Get();
+    t.Show();
+
+    Tester s = Tester("Kritos");
+    s.Get();
+    s.Show();
 }

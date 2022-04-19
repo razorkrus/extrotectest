@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
+#include <map>
 
 using namespace std;
 using namespace rapidjson;
@@ -100,15 +101,28 @@ void parse_and_add_key(string json_old){
 
     // Add those values one by one, need to convert string into Value format first
     // And then use AddMember method to pair the key and value
+    Value k;
     Value v;
-    v.SetString(vs[0].c_str(), vs[0].size(), doc.GetAllocator());
-    doc.AddMember("imgOne", v, doc.GetAllocator()); // added key "imgOne"
 
-    v.SetString(vs[1].c_str(), vs[1].size(), doc.GetAllocator());
-    doc.AddMember("imgTwo", v, doc.GetAllocator()); // added key "imgTwo"
+    map<int, string> numWords;
+    numWords[1] = "One";
+    numWords[2] = "Two";
+    numWords[3] = "Three";
 
-    v.SetString(vs[2].c_str(), vs[2].size(), doc.GetAllocator());
-    doc.AddMember("imgThree", v, doc.GetAllocator()); // added key "imgThree"
+    int i = 1;
+    for (auto s: vs){
+        string key = "img" + numWords[i];
+        k.SetString(key.c_str(), key.size(), doc.GetAllocator());
+        v.SetString(s.c_str(), s.size(), doc.GetAllocator());
+        doc.AddMember(k, v, doc.GetAllocator()); 
+        i++;
+    }
+
+    // v.SetString(vs[1].c_str(), vs[1].size(), doc.GetAllocator());
+    // doc.AddMember("imgTwo", v, doc.GetAllocator()); // added key "imgTwo"
+
+    // v.SetString(vs[2].c_str(), vs[2].size(), doc.GetAllocator());
+    // doc.AddMember("imgThree", v, doc.GetAllocator()); // added key "imgThree"
 
     // use StringBuffer to convert the Document into a const char* step by step
     StringBuffer s;
